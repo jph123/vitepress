@@ -1,7 +1,7 @@
 window.SEARCH_INDEX = [
   {
     "title": "HTML",
-    "url": "/pages/threeMusketeers/html/index.html",
+    "url": "/vitepress/pages/threeMusketeers/html/index.html",
     "color": "#e44d26",
     "category": "前端三剑客",
     "desc": "超文本标记语言，网页结构的基石",
@@ -20,7 +20,7 @@ window.SEARCH_INDEX = [
   },
   {
     "title": "CSS",
-    "url": "/pages/threeMusketeers/css/index.html",
+    "url": "/vitepress/pages/threeMusketeers/css/index.html",
     "color": "#1572b6",
     "category": "前端三剑客",
     "desc": "层叠样式表，让网页变得美观动人",
@@ -39,7 +39,7 @@ window.SEARCH_INDEX = [
   },
   {
     "title": "JavaScript",
-    "url": "/pages/threeMusketeers/javaScript/index.html",
+    "url": "/vitepress/pages/threeMusketeers/javaScript/index.html",
     "color": "#f7df1e",
     "category": "前端三剑客",
     "desc": "网页交互的灵魂，前端必备编程语言",
@@ -58,7 +58,7 @@ window.SEARCH_INDEX = [
   },
   {
     "title": "Vue 2",
-    "url": "/pages/webFrame/vue2/index.html",
+    "url": "/vitepress/pages/webFrame/vue2/index.html",
     "color": "#42b883",
     "category": "前端框架",
     "desc": "渐进式 JavaScript 框架，Vue 2 经典版本",
@@ -77,7 +77,7 @@ window.SEARCH_INDEX = [
   },
   {
     "title": "Vue 3",
-    "url": "/pages/webFrame/vue3/index.html",
+    "url": "/vitepress/pages/webFrame/vue3/index.html",
     "color": "#646cff",
     "category": "前端框架",
     "desc": "Composition API、性能提升，Vue 的全新篇章",
@@ -96,7 +96,7 @@ window.SEARCH_INDEX = [
   },
   {
     "title": "React",
-    "url": "/pages/webFrame/react/index.html",
+    "url": "/vitepress/pages/webFrame/react/index.html",
     "color": "#61dafb",
     "category": "前端框架",
     "desc": "用于构建用户界面的 JavaScript 库",
@@ -115,7 +115,7 @@ window.SEARCH_INDEX = [
   },
   {
     "title": "电气基础",
-    "url": "/pages/electrical/basics/index.html",
+    "url": "/vitepress/pages/electrical/basics/index.html",
     "color": "#ff9800",
     "category": "电气基础",
     "desc": "直流电/交流电、交流接触器、中间继电器等",
@@ -129,7 +129,7 @@ window.SEARCH_INDEX = [
   },
   {
     "title": "PLC 基础",
-    "url": "/pages/electrical/plc/index.html",
+    "url": "/vitepress/pages/electrical/plc/index.html",
     "color": "#00bcd4",
     "category": "电气基础",
     "desc": "常开常闭、置位复位、定时器、数据类型等",
