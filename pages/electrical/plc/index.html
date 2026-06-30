@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLC 基础知识 | PengHui 笔记</title>
+  <link rel="icon" href="/assets/logo.jpg">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0d1117;--bg-soft:#161b22;--card:#1c2128;--card-hover:#22272e;
+      --border:#30363d;--text:#e6edf3;--text-soft:#8b949e;
+      --accent:#00bcd4;--accent-soft:rgba(0,188,212,.12);
+      --code-bg:#0d1117;--code-border:rgba(110,118,129,.4);
+      --radius:12px;--shadow:0 4px 24px rgba(0,0,0,.3);
+    }
+    [data-theme="light"]{
+      --bg:#ffffff;--bg-soft:#f6f8fa;--card:#ffffff;--card-hover:#f3f4f6;
+      --border:#d0d7de;--text:#1f2328;--text-soft:#656d76;
+      --accent:#00bcd4;--accent-soft:rgba(0,188,212,.08);
+      --code-bg:#f6f8fa;--code-border:rgba(208,215,222,.6);
+      --shadow:0 4px 24px rgba(0,0,0,.08);
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+
+    /* Nav */
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:transparent;transition:background .3s,box-shadow .3s}
+    .nav.scrolled{background:var(--bg-soft);box-shadow:0 1px 0 var(--border);backdrop-filter:blur(12px)}
+    .nav-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+    .nav-brand img{width:30px;height:30px;border-radius:8px}
+    .nav-links{display:flex;align-items:center;gap:24px}
+    .nav-links a{color:var(--text-soft);font-size:14px;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--accent)}
+    .theme-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .theme-btn:hover{transform:scale(1.1)}
+
+    /* Hero */
+    .hero{text-align:center;padding:120px 24px 60px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,var(--accent-soft),transparent 70%);pointer-events:none}
+    .hero-badge{display:inline-block;padding:6px 16px;border-radius:20px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;margin-bottom:20px;animation:fadeUp .6s ease}
+    .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;background:linear-gradient(135deg,var(--accent),#26c6da);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .6s ease .1s both}
+    .hero p{color:var(--text-soft);font-size:1.05rem;max-width:600px;margin:16px auto 0;animation:fadeUp .6s ease .2s both}
+
+    /* Content */
+    .container{max-width:860px;margin:0 auto;padding:0 24px 80px}
+    .section-title{font-size:1.4rem;font-weight:700;margin:48px 0 20px;padding-left:14px;border-left:4px solid var(--accent);animation:fadeUp .5s ease both}
+
+    /* Knowledge Card */
+    .ka-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s;animation:fadeUp .4s ease both}
+    .ka-item:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+    .ka-item.open{border-color:var(--accent)}
+    .ka-header{display:flex;align-items:center;gap:12px;padding:18px 20px;cursor:pointer;user-select:none}
+    .ka-icon{flex-shrink:0;width:32px;height:32px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center}
+    .ka-title{flex:1;font-weight:600;font-size:15px}
+    .ka-toggle{flex-shrink:0;color:var(--text-soft);font-size:14px;transition:transform .3s}
+    .ka-item.open .ka-toggle{transform:rotate(180deg)}
+    .ka-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+    .ka-body-inner{padding:0 20px 20px;color:var(--text-soft);font-size:14.5px;line-height:1.8}
+    .ka-body-inner p{margin-bottom:10px}
+    .ka-body-inner ul{padding-left:20px;margin-bottom:10px}
+    .ka-body-inner li{margin-bottom:6px}
+    .ka-body-inner strong{color:var(--text);font-weight:600}
+    .ka-body-inner code{background:var(--code-bg);border:1px solid var(--code-border);border-radius:4px;padding:1px 6px;font-family:'Cascadia Code',Consolas,monospace;font-size:13px;color:var(--accent)}
+    .ka-body-inner .tip{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;color:var(--text)}
+    .ka-body-inner .diagram{background:var(--code-bg);border:1px solid var(--code-border);border-radius:8px;padding:16px;margin:10px 0;font-family:'Cascadia Code',Consolas,monospace;font-size:13px;color:var(--text);white-space:pre;overflow-x:auto;line-height:1.5}
+
+    /* Table */
+    .ka-body-inner table{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
+    .ka-body-inner th{padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);color:var(--text);font-weight:600;white-space:nowrap}
+    .ka-body-inner td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-soft)}
+    .ka-body-inner td code{font-size:12px}
+
+    /* Footer */
+    .footer{text-align:center;padding:40px 24px;color:var(--text-soft);font-size:13px;border-top:1px solid var(--border)}
+    .footer a{color:var(--accent)}
+
+    /* Animations */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Mobile */
+    @media(max-width:640px){
+      .nav-links a:not(.theme-btn){display:none}
+      .hero{padding:100px 16px 40px}
+      .container{padding:0 16px 60px}
+      .ka-header{padding:14px 16px}
+      .ka-title{font-size:14px}
+      .ka-body-inner{padding:0 16px 16px;font-size:13.5px}
+      .ka-body-inner .diagram{font-size:11px}
+      .ka-body-inner table{font-size:12px}
+      .ka-body-inner th,.ka-body-inner td{padding:6px 8px}
+    }
+
+    /* Back to Top */
+    .back-top{position:fixed;right:24px;bottom:24px;width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,#646cff,#61dafb);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .3s ease;z-index:90;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+    [data-theme="light"] .back-top{box-shadow:0 4px 16px rgba(100,108,255,.3)}
+    .back-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+    .back-top:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 6px 24px rgba(100,108,255,.5)}
+    @media(max-width:640px){.back-top{right:16px;bottom:16px;width:40px;height:40px;font-size:18px}}
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav" id="nav">
+    <a class="nav-brand" href="/index.html">
+      <img src="/assets/logo.jpg" alt="logo">
+      <span>PengHui</span>
+    </a>
+    <div class="nav-links">
+      <a href="/index.html">首页</a>
+      <a href="/index.html#tech">技术列表</a>
+      <a href="https://github.com/jph123" target="_blank">GitHub</a>
+      <button class="theme-btn" id="themeToggle"><span id="themeIcon">🌙</span></button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <span class="hero-badge">电气工程 · PLC 篇</span>
+    <h1>PLC 基础知识</h1>
+    <p>常开常闭、置位复位、上升沿下降沿、定时器、数据类型等 PLC 核心知识点整理。</p>
+  </section>
+
+  <!-- Knowledge Cards -->
+  <div class="container">
+    <h2 class="section-title" style="animation-delay:.3s">知识点</h2>
+
+    <!-- 常开和常闭 -->
+    <div class="ka-item" style="animation-delay:.35s">
+      <div class="ka-header"><span class="ka-icon">⚡</span><span class="ka-title">常开（NO）和常闭（NC）</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>常开（NO = Normally Open）</strong></p>
+        <ul>
+          <li><strong>原始状态</strong>（按钮没按、线圈没电）：断开，线路不通</li>
+          <li><strong>动作后</strong>（按钮按下、线圈得电）：闭合，线路导通</li>
+        </ul>
+        <div class="tip">俗称：<strong>一动就合，平时断开</strong>。</div>
+
+        <p style="margin-top:16px"><strong>常闭（NC = Normally Closed）</strong></p>
+        <ul>
+          <li><strong>原始状态</strong>（按钮没按、线圈没电）：闭合，线路通</li>
+          <li><strong>动作后</strong>（按钮按下、线圈得电）：断开，线路切断</li>
+        </ul>
+        <div class="tip">俗称：<strong>一动就断，平时导通</strong>。</div>
+
+        <div class="diagram">常开 NO              常闭 NC
+
+  原始状态：            原始状态：
+  ──/ ──  (断开)       ──| ──  (闭合)
+
+  动作后：              动作后：
+  ──| ──  (闭合)       ──/ ──  (断开)</div>
+      </div></div>
+    </div>
+
+    <!-- 置位/复位 -->
+    <div class="ka-item" style="animation-delay:.4s">
+      <div class="ka-header"><span class="ka-icon">🔒</span><span class="ka-title">置位（S）/ 复位（R）</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>置位（S = Set）</strong>：自锁，一直有电。即使触发信号消失，线圈仍然保持得电状态。</p>
+        <p><strong>复位（R = Reset）</strong>：清零/断电，让它没电。解除自锁状态。</p>
+        <div class="tip">西门子置位 S、复位 R 线圈下方的数字 <code>N</code>，代表<strong>连续操作多少个位</strong>，取值范围：<code>0~255</code>。</div>
+        <div class="diagram">置位 S：按下 → 线圈得电并保持（自锁）
+         松手 → 线圈仍然有电
+
+复位 R：按下 → 线圈断电
+         松手 → 线圈仍然没电
+
+典型应用：电机启停控制
+  启动按钮 → S（置位）→ 电机运行
+  停止按钮 → R（复位）→ 电机停止</div>
+      </div></div>
+    </div>
+
+    <!-- 上升沿与下降沿 -->
+    <div class="ka-item" style="animation-delay:.45s">
+      <div class="ka-header"><span class="ka-icon">📈</span><span class="ka-title">上升沿与下降沿</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>上升沿（EU / PLS / ↑）</strong></p>
+        <p>触点由<strong>断开变接通</strong>的那一瞬间，信号从 <code>OFF→ON</code>（<code>0→1</code>），瞬间产生一个<strong>扫描周期的脉冲信号</strong>，维持 PLC 1 个扫描周期，之后立刻断开。</p>
+
+        <p style="margin-top:14px"><strong>下降沿（ED / PLF / ↓）</strong></p>
+        <p>触点由<strong>接通变断开</strong>的那一瞬间，信号从 <code>ON→OFF</code>（<code>1→0</code>），瞬间产生一个<strong>扫描周期的脉冲信号</strong>，维持 PLC 1 个扫描周期，之后立刻断开。</p>
+
+        <div class="diagram">信号波形：
+
+        ┌──────┐              ┌──────
+        │      │              │
+  ──────┘      └──────────────┘
+        ↑      ↑              ↑
+     上升沿   下降沿        上升沿
+     (0→1)   (1→0)         (0→1)
+
+脉冲输出：
+     │      │              │
+  ───┘      └──────────────┘
+     1个     1个             1个
+   扫描周期 扫描周期       扫描周期</div>
+        <div class="tip">核心要点：上升沿/下降沿只在一个扫描周期内有效，常用于<strong>触发一次性动作</strong>，如计数、状态切换。</div>
+      </div></div>
+    </div>
+
+    <!-- 定时器 -->
+    <div class="ka-item" style="animation-delay:.5s">
+      <div class="ka-header"><span class="ka-icon">⏱️</span><span class="ka-title">定时器（TON / TOF / TONR）</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>接通延时定时器（TON）</strong></p>
+        <p>按下按钮，到达预定的时间后电机启动；松手电机立刻停。</p>
+        <div class="diagram">TON 接通延时：
+  按钮 ────────────────────┐ 松手
+                            │
+  定时 ────|====设定时间====|──
+                            
+  输出                    ┌──┐
+  ───────────────────────┘  └── 立刻断开</div>
+
+        <p style="margin-top:14px"><strong>断电延时定时器（TOF）</strong></p>
+        <p>按下按钮，计时器常开触点立刻吸合通电；松开按钮后，到达预定时间常开才断开。</p>
+        <div class="diagram">TOF 断电延时：
+  按钮按下 ──────┐ 松手
+                 │
+  输出 ──────────┤============设定时间====┐
+                                         │
+                                    延时后才断开</div>
+
+        <p style="margin-top:14px"><strong>带保持的接通延时定时器（TONR）</strong></p>
+        <p>按下按钮会记录当前按下的时间，下次按下时会从上次记录的时间继续累计计时。需要手动复位才能清零。</p>
+        <div class="diagram">TONR 带保持延时：
+  按下 3s ── 松开 ── 再按下 2s ── 松开 ── 再按下
+                                    │
+                          累计计时 = 3s + 2s + ...
+                          到达设定时间后输出</div>
+      </div></div>
+    </div>
+
+    <!-- 定时器类型表 -->
+    <div class="ka-item" style="animation-delay:.55s">
+      <div class="ka-header"><span class="ka-icon">📋</span><span class="ka-title">定时器类型与时基对照表</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p>不同定时器号对应不同的时基和最大定时值：</p>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>定时器类型</th>
+                <th>时基</th>
+                <th>最大值</th>
+                <th>定时器号</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>TON、TOF</strong></td><td>1ms</td><td>32.767s</td><td><code>T32、T96</code></td></tr>
+              <tr><td><strong>TON、TOF</strong></td><td>10ms</td><td>327.67s</td><td><code>T33-T36、T97-T100</code></td></tr>
+              <tr><td><strong>TON、TOF</strong></td><td>100ms</td><td>3276.7s</td><td><code>T37-T63、T101-T255</code></td></tr>
+              <tr><td><strong>TONR</strong></td><td>1ms</td><td>32.767s</td><td><code>T0、T64</code></td></tr>
+              <tr><td><strong>TONR</strong></td><td>10ms</td><td>327.67s</td><td><code>T1-T4、T65-T68</code></td></tr>
+              <tr><td><strong>TONR</strong></td><td>100ms</td><td>3276.7s</td><td><code>T5-T31、T69-T95</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tip">时基越小精度越高，但最大定时时间越短。100ms 时基可定时最长约 54 分钟。</div>
+      </div></div>
+    </div>
+
+    <!-- 数据类型 -->
+    <div class="ka-item" style="animation-delay:.6s">
+      <div class="ka-header"><span class="ka-icon">📊</span><span class="ka-title">PLC 数据类型</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>数据类型</th>
+                <th>长度（bit）</th>
+                <th>范围</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>位（Bool）</strong></td><td>1</td><td><code>0 / 1</code></td></tr>
+              <tr><td><strong>字节（Byte）</strong></td><td>8</td><td><code>0 ~ 255</code></td></tr>
+              <tr><td><strong>字（Word）</strong></td><td>16</td><td><code>0 ~ 65535</code></td></tr>
+              <tr><td><strong>双字（DWord）</strong></td><td>32</td><td><code>0 ~ 4294967295</code></td></tr>
+              <tr><td><strong>整数（Int）</strong></td><td>16</td><td><code>-32768 ~ 32767</code></td></tr>
+              <tr><td><strong>双整数（DInt）</strong></td><td>32</td><td><code>±2147483647</code></td></tr>
+              <tr><td><strong>浮点数（Real）</strong></td><td>32</td><td>浮点数</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tip">记忆口诀：Bool 1 位、Byte 8 位、Word/Int 16 位、DWord/DInt/Real 32 位。Word 无符号、Int 有符号。</div>
+        <div class="diagram">数据类型层级关系：
+
+  位 Bool (1 bit)
+   └─ 字节 Byte (8 bit = 8 个 Bool)
+       └─ 字 Word (16 bit = 2 个 Byte)
+           └─ 双字 DWord (32 bit = 2 个 Word)
+
+  有符号版本：Int (16 bit) / DInt (32 bit)
+  小数版本：  Real (32 bit 浮点数)</div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Copyright © 2022-2026 PengHui · <a href="/index.html">返回首页</a></p>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-top" id="backTop" aria-label="返回顶部">↑</button>
+
+  <script>
+    // Theme toggle
+    (function(){
+      var body=document.documentElement,icon=document.getElementById('themeIcon'),toggle=document.getElementById('themeToggle');
+      // Default dark theme
+      toggle.addEventListener('click',function(){
+        var c=body.getAttribute('data-theme');
+        body.setAttribute('data-theme',c==='dark'?'light':'dark');
+        icon.textContent=c==='dark'?'☀️':'🌙';
+      });
+    })();
+
+    // Nav scroll
+    window.addEventListener('scroll',function(){
+      document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
+    });
+
+    // Back to top
+    var backTop=document.getElementById('backTop');
+    window.addEventListener('scroll',function(){
+      backTop.classList.toggle('show',window.scrollY>300);
+    });
+    backTop.addEventListener('click',function(){
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    // Accordion
+    document.querySelectorAll('.ka-header').forEach(function(h){
+      h.addEventListener('click',function(){
+        var item=h.parentElement,body=h.nextElementSibling;
+        var isOpen=item.classList.contains('open');
+        document.querySelectorAll('.ka-item').forEach(function(i){
+          i.classList.remove('open');i.querySelector('.ka-body,.ka-body').style.maxHeight=null;
+        });
+        if(!isOpen){
+          item.classList.add('open');
+          var bodyEl=item.querySelector('.ka-body,.ka-body');
+          bodyEl.style.maxHeight=bodyEl.scrollHeight+'px';
+        }
+      });
+    });
+  </script>
+  <!-- Global Search -->
+  <script src="/search-index.js"></script>
+  <script src="/search.js"></script>
+</body>
+</html>

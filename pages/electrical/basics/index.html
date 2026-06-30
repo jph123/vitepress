@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>电气基础知识 | PengHui 笔记</title>
+  <link rel="icon" href="/assets/logo.jpg">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#0d1117;--bg-soft:#161b22;--card:#1c2128;--card-hover:#22272e;
+      --border:#30363d;--text:#e6edf3;--text-soft:#8b949e;
+      --accent:#ff9800;--accent-soft:rgba(255,152,0,.12);
+      --code-bg:#0d1117;--code-border:rgba(110,118,129,.4);
+      --radius:12px;--shadow:0 4px 24px rgba(0,0,0,.3);
+    }
+    [data-theme="light"]{
+      --bg:#ffffff;--bg-soft:#f6f8fa;--card:#ffffff;--card-hover:#f3f4f6;
+      --border:#d0d7de;--text:#1f2328;--text-soft:#656d76;
+      --accent:#ff9800;--accent-soft:rgba(255,152,0,.08);
+      --code-bg:#f6f8fa;--code-border:rgba(208,215,222,.6);
+      --shadow:0 4px 24px rgba(0,0,0,.08);
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;transition:background .3s,color .3s}
+    a{color:inherit;text-decoration:none}
+
+    /* Nav */
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:transparent;transition:background .3s,box-shadow .3s}
+    .nav.scrolled{background:var(--bg-soft);box-shadow:0 1px 0 var(--border);backdrop-filter:blur(12px)}
+    .nav-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+    .nav-brand img{width:30px;height:30px;border-radius:8px}
+    .nav-links{display:flex;align-items:center;gap:24px}
+    .nav-links a{color:var(--text-soft);font-size:14px;font-weight:500;transition:color .2s}
+    .nav-links a:hover{color:var(--accent)}
+    .theme-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .theme-btn:hover{transform:scale(1.1)}
+
+    /* Hero */
+    .hero{text-align:center;padding:120px 24px 60px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:500px;height:300px;background:radial-gradient(ellipse,var(--accent-soft),transparent 70%);pointer-events:none}
+    .hero-badge{display:inline-block;padding:6px 16px;border-radius:20px;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:600;margin-bottom:20px;animation:fadeUp .6s ease}
+    .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;background:linear-gradient(135deg,var(--accent),#ff5722);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .6s ease .1s both}
+    .hero p{color:var(--text-soft);font-size:1.05rem;max-width:600px;margin:16px auto 0;animation:fadeUp .6s ease .2s both}
+
+    /* Content */
+    .container{max-width:840px;margin:0 auto;padding:0 24px 80px}
+    .section-title{font-size:1.4rem;font-weight:700;margin:48px 0 20px;padding-left:14px;border-left:4px solid var(--accent);animation:fadeUp .5s ease both}
+
+    /* Knowledge Card */
+    .ka-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;transition:border-color .2s,box-shadow .2s;animation:fadeUp .4s ease both}
+    .ka-item:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+    .ka-item.open{border-color:var(--accent)}
+    .ka-header{display:flex;align-items:center;gap:12px;padding:18px 20px;cursor:pointer;user-select:none}
+    .ka-icon{flex-shrink:0;width:32px;height:32px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center}
+    .ka-title{flex:1;font-weight:600;font-size:15px}
+    .ka-toggle{flex-shrink:0;color:var(--text-soft);font-size:14px;transition:transform .3s}
+    .ka-item.open .ka-toggle{transform:rotate(180deg)}
+    .ka-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+    .ka-body-inner{padding:0 20px 20px;color:var(--text-soft);font-size:14.5px;line-height:1.8}
+    .ka-body-inner p{margin-bottom:10px}
+    .ka-body-inner ul{padding-left:20px;margin-bottom:10px}
+    .ka-body-inner li{margin-bottom:6px}
+    .ka-body-inner strong{color:var(--text);font-weight:600}
+    .ka-body-inner code{background:var(--code-bg);border:1px solid var(--code-border);border-radius:4px;padding:1px 6px;font-family:'Cascadia Code',Consolas,monospace;font-size:13px;color:var(--accent)}
+    .ka-body-inner .tip{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 14px;margin:10px 0;color:var(--text)}
+    .ka-body-inner .diagram{background:var(--code-bg);border:1px solid var(--code-border);border-radius:8px;padding:16px;margin:10px 0;font-family:'Cascadia Code',Consolas,monospace;font-size:13px;color:var(--text);white-space:pre;overflow-x:auto;line-height:1.5}
+
+    /* Footer */
+    .footer{text-align:center;padding:40px 24px;color:var(--text-soft);font-size:13px;border-top:1px solid var(--border)}
+    .footer a{color:var(--accent)}
+
+    /* Animations */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Mobile */
+    @media(max-width:640px){
+      .nav-links a:not(.theme-btn){display:none}
+      .hero{padding:100px 16px 40px}
+      .container{padding:0 16px 60px}
+      .ka-header{padding:14px 16px}
+      .ka-title{font-size:14px}
+      .ka-body-inner{padding:0 16px 16px;font-size:13.5px}
+      .ka-body-inner .diagram{font-size:11px}
+    }
+    /* Back to Top */
+    .back-top{position:fixed;right:24px;bottom:24px;width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,#646cff,#61dafb);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;opacity:0;visibility:hidden;transform:translateY(20px);transition:all .3s ease;z-index:90;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+    [data-theme="light"] .back-top{box-shadow:0 4px 16px rgba(100,108,255,.3)}
+    .back-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+    .back-top:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 6px 24px rgba(100,108,255,.5)}
+    @media(max-width:640px){.back-top{right:16px;bottom:16px;width:40px;height:40px;font-size:18px}}
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav" id="nav">
+    <a class="nav-brand" href="/index.html">
+      <img src="/assets/logo.jpg" alt="logo">
+      <span>PengHui</span>
+    </a>
+    <div class="nav-links">
+      <a href="/index.html">首页</a>
+      <a href="/index.html#tech">技术列表</a>
+      <a href="https://github.com/jph123" target="_blank">GitHub</a>
+      <button class="theme-btn" id="themeToggle"><span id="themeIcon">🌙</span></button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <span class="hero-badge">电气工程 · 基础篇</span>
+    <h1>电气基础</h1>
+    <p>直流电与交流电、交流接触器、中间继电器等电气基础知识点整理。</p>
+  </section>
+
+  <!-- Knowledge Cards -->
+  <div class="container">
+    <h2 class="section-title" style="animation-delay:.3s">知识点</h2>
+
+    <!-- 直流电 / 交流电 -->
+    <div class="ka-item" style="animation-delay:.35s">
+      <div class="ka-header"><span class="ka-icon">⚡</span><span class="ka-title">直流电（DC）与交流电（AC）</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>直流电 DC（Direct Current）</strong>：大小、方向都<strong>不随时间变化</strong>。</p>
+        <p><strong>交流电 AC（Alternating Current）</strong>：大小、方向<strong>随时间周期性变化</strong>。</p>
+        <div class="tip">记忆要点：DC = 不变；AC = 周期性变化。</div>
+      </div></div>
+    </div>
+
+    <!-- 交流电分类 -->
+    <div class="ka-item" style="animation-delay:.4s">
+      <div class="ka-header"><span class="ka-icon">🔌</span><span class="ka-title">交流电分类：单相电与三相电</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>单相电</strong>：一根火线 + 一根零线</p>
+        <ul>
+          <li><code>L</code> — 火线（Live）</li>
+          <li><code>N</code> — 零线（Neutral）</li>
+        </ul>
+        <p><strong>三相电</strong>：三根火线</p>
+        <ul>
+          <li><code>L1</code>、<code>L2</code>、<code>L3</code> — 三根火线</li>
+        </ul>
+        <div class="diagram">单相电：  L ────┐
+                N ────┘  负载
+
+三相电：  L1 ───┐
+          L2 ───┤  负载
+          L3 ───┘</div>
+        <div class="tip">家庭用电一般为单相电（220V），工业用电多为三相电（380V）。</div>
+      </div></div>
+    </div>
+
+    <!-- 交流接触器 -->
+    <div class="ka-item" style="animation-delay:.45s">
+      <div class="ka-header"><span class="ka-icon">🔧</span><span class="ka-title">交流接触器 KM</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>工作原理：</strong>利用<strong>电磁力</strong>与<strong>弹簧弹力</strong>相配合，实现触头的接通和分断。</p>
+        <p><strong>两种工作状态：</strong></p>
+        <ul>
+          <li><strong>失电状态（释放状态）</strong>：线圈无电，触头处于初始位置</li>
+          <li><strong>得电状态（动作状态）</strong>：线圈通电，电磁力吸合触头</li>
+        </ul>
+        <p><strong>三个组成部分：</strong></p>
+        <ul>
+          <li><strong>线圈</strong>：通电产生电磁力</li>
+          <li><strong>主触点</strong>：接通/分断主电路（大电流）</li>
+          <li><strong>辅助触点</strong>：用于控制电路（小电流），包括常开（NO）和常闭（NC）</li>
+        </ul>
+        <div class="diagram">交流接触器结构：
+
+    ┌─────────────────────┐
+    │       线圈           │
+    │    (A1 ---- A2)      │
+    ├─────────────────────┤
+    │  主触点  │ 辅助触点   │
+    │  L1-L2-L3│  NO  NC   │
+    └─────────────────────┘</div>
+        <div class="tip"><strong>总结：</strong>线圈得电 → 常开吸合，常闭断开；线圈失电 → 所有常开常闭复位。<br><br><strong>复位</strong>：即常开恢复为常开，常闭恢复为常闭。</div>
+      </div></div>
+    </div>
+
+    <!-- 中间继电器 -->
+    <div class="ka-item" style="animation-delay:.5s">
+      <div class="ka-header"><span class="ka-icon">🛠️</span><span class="ka-title">中间继电器 KA</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p><strong>三个组成部分：</strong></p>
+        <ul>
+          <li><strong>线圈</strong>：通电产生电磁力</li>
+          <li><strong>常开触点（NO）</strong>：线圈得电时闭合</li>
+          <li><strong>常闭触点（NC）</strong>：线圈得电时断开</li>
+        </ul>
+        <p><strong>工作逻辑：</strong></p>
+        <ul>
+          <li>线圈<strong>得电</strong> → 常开<strong>吸合</strong>，常闭<strong>断开</strong></li>
+          <li>线圈<strong>失电</strong> → 常开<strong>闭合复位</strong>（恢复断开），常闭<strong>复位</strong>（恢复闭合）</li>
+        </ul>
+        <div class="diagram">中间继电器 vs 交流接触器：
+
+中间继电器 KA          交流接触器 KM
+─────────────         ─────────────
+触点容量小             触点容量大
+用于控制电路           用于主电路
+放大信号/增加触点      直接控制负载</div>
+        <div class="tip"><strong>记忆口诀：</strong>得电——常开变闭合，常闭变断开；失电——全部回原位。</div>
+      </div></div>
+    </div>
+
+    <!-- 触点状态速查 -->
+    <div class="ka-item" style="animation-delay:.55s">
+      <div class="ka-header"><span class="ka-icon">📋</span><span class="ka-title">触点状态速查表</span><span class="ka-toggle">▼</span></div>
+      <div class="ka-body"><div class="ka-body-inner">
+        <p>无论是交流接触器 KM 还是中间继电器 KA，触点逻辑相同：</p>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14px;margin:10px 0">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border)">
+                <th style="padding:10px 14px;text-align:left">线圈状态</th>
+                <th style="padding:10px 14px;text-align:left">常开触点（NO）</th>
+                <th style="padding:10px 14px;text-align:left">常闭触点（NC）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:10px 14px"><strong>得电</strong></td>
+                <td style="padding:10px 14px;color:var(--accent)">吸合（闭合）</td>
+                <td style="padding:10px 14px;color:var(--accent)">断开</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:10px 14px"><strong>失电</strong></td>
+                <td style="padding:10px 14px">复位（断开）</td>
+                <td style="padding:10px 14px">复位（闭合）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tip">常开（NO = Normally Open）：常态下断开，得电后闭合。<br>常闭（NC = Normally Closed）：常态下闭合，得电后断开。</div>
+      </div></div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Copyright © 2022 PengHui · <a href="/index.html">返回首页</a></p>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-top" id="backTop" aria-label="返回顶部">↑</button>
+  <script>
+    // Theme toggle
+    (function(){
+      var body=document.documentElement,icon=document.getElementById('themeIcon'),toggle=document.getElementById('themeToggle');
+      // Default dark theme
+      toggle.addEventListener('click',function(){
+        var c=body.getAttribute('data-theme');
+        body.setAttribute('data-theme',c==='dark'?'light':'dark');
+        icon.textContent=c==='dark'?'☀️':'🌙';
+      });
+    })();
+
+    // Nav scroll
+    window.addEventListener('scroll',function(){
+      document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
+    });
+
+    // Back to top
+    var backTop=document.getElementById('backTop');
+    window.addEventListener('scroll',function(){
+      backTop.classList.toggle('show',window.scrollY>300);
+    });
+    backTop.addEventListener('click',function(){
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+
+    // Accordion
+    document.querySelectorAll('.ka-header').forEach(function(h){
+      h.addEventListener('click',function(){
+        var item=h.parentElement,body=h.nextElementSibling;
+        var isOpen=item.classList.contains('open');
+        document.querySelectorAll('.ka-item').forEach(function(i){
+          i.classList.remove('open');i.querySelector('.ka-body').style.maxHeight=null;
+        });
+        if(!isOpen){item.classList.add('open');body.style.maxHeight=body.scrollHeight+'px';}
+      });
+    });
+  </script>
+  <!-- Global Search -->
+  <script src="/search-index.js"></script>
+  <script src="/search.js"></script>
+</body>
+</html>
